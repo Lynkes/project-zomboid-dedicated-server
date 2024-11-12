@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  zomboid-server:
+    image: pedromaurer/project-zomboid-dedicated-server:latest # Utilize a imagem oficial ou personalizada
+    container_name: zomboid-server
+    environment:
+      - ZOMBOID_DATA_PATH=/opt/pzserver  # Ajuste o caminho conforme necessário
+      - MEMORY=2048m           # Memória alocada para o servidor (modifique conforme necessário)
+      - SOFTRESET=true         # Habilita Soft Reset
+      - NOSTEAM=true           # Desativa Steam no servidor
+      - CACHEDIR=/opt/pzserver/cache  # Caminho para o diretório de cache
+      - MODFOLDERS=mods,steam  # Pastas de mods
+      - DEBUG=true             # Habilita o modo de depuração
+      - ADMINPASSWORD=admin    # Senha do administrador
+      - PASSWORD=12345         # Senha do servidor
+      - SERVERNAME=MyZomboidServer  # Nome do servidor
+      - IP=0.0.0.0            # Endereço IP para o servidor
+      - PORT=16261            # Porta do servidor
+      - STEAMVAC=true          # Habilita o SteamVAC
+      - STEAMPORT1=8766       # Porta adicional Steam
+      - STEAMPORT2=8767       # Porta adicional Steam
+      - MOD_IDS=mod1,mod2     # IDs dos mods
+      - WORKSHOP_IDS=123456,789012  # IDs do Workshop
+      - HOMEDIR=/opt/pzserver  # Diretório principal do servidor
+    command: /bin/bash -c "/opt/pzserver/setup.sh"  # Executa o setup.sh corretamente
+    volumes:
+      - zomboid_data:/opt/pzserver  # Volume persistente para dados do servidor
+      - ./start-server.sh:/start-server.sh:ro  # Script de inicialização no contêiner
+    ports:
+      - "16261:16261"           # Porta de jogo
+      - "8766:8766"             # Porta Steam
+      - "8767:8767"             # Porta Steam
+    restart: always
+    network_mode: bridge
+
+volumes:
+  zomboid_data:
+    driver: local
